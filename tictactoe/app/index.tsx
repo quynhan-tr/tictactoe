@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { styles } from '../components/TicTacToeStyle';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
+
 
 const App = () => {
   const emptyBoard = Array(9).fill(null);
-  const [board, setBoard] = useState(emptyBoard);
+  const [gameStarted, setGameStarted] = useState(false);
+
+  const [board, setBoard] = useState(Array(9).fill(null));
   const [xIsNext, setXIsNext] = useState(true);
-  const winner = calculateWinner(board);
+
+  const { winner, line: winningLine } = calculateWinner(board);
+  const isDraw = !winner && board.every((square) => square !== null);
 
   const handlePress = (index: number) => {
     if (board[index] || winner) return;
@@ -15,101 +26,78 @@ const App = () => {
     setXIsNext(!xIsNext);
   };
 
-  const renderSquare = (index: number) => (
-    <TouchableOpacity style={styles.square} onPress={() => handlePress(index)}>
-      <Text style={styles.symbol}>{board[index]}</Text>
-    </TouchableOpacity>
-  );
-
   const resetGame = () => {
     setBoard(emptyBoard);
     setXIsNext(true);
+    setGameStarted(false);
+  };
+
+  const renderSquare = (index: number) => {
+    const isWinningSquare = winningLine?.includes(index);
+
+    return (
+      <TouchableOpacity
+        key={index}
+        style={[styles.square, isWinningSquare && styles.winningSquare]}
+        onPress={() => handlePress(index)}
+      >
+        <Text style={styles.symbol}>{board[index]}</Text>
+      </TouchableOpacity>
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Tic Tac Toe</Text>
-      <Text style={styles.status}>
-        {winner ? `Winner: ${winner}` : `Turn: ${xIsNext ? 'X' : 'O'}`}
-      </Text>
-      <View style={styles.board}>
-        {[0, 1, 2].map((row) => (
-          <View key={row} style={styles.row}>
-            {renderSquare(row * 3)}
-            {renderSquare(row * 3 + 1)}
-            {renderSquare(row * 3 + 2)}
+      {!gameStarted ? (
+        <View style={styles.gameCard}>
+          <Text style={styles.title}>Tic Tac Toe</Text>
+          <TouchableOpacity style={styles.playButton} onPress={() => setGameStarted(true)}>
+            <Text style={styles.playText}>Play</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View style={styles.gameCard}>
+          <Text style={styles.title}>Tic Tac Toe</Text>
+          <Text style={styles.status}>
+            {winner
+              ? `Winner: ${winner}`
+              : isDraw
+              ? "It's a draw!"
+              : `Turn: ${xIsNext ? 'X' : 'O'}`}
+          </Text>
+          <View style={styles.board}>
+            {[0, 1, 2].map((row) => (
+              <View key={row} style={styles.row}>
+                {renderSquare(row * 3)}
+                {renderSquare(row * 3 + 1)}
+                {renderSquare(row * 3 + 2)}
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
-      {winner && (
-        <TouchableOpacity style={styles.resetButton} onPress={resetGame}>
-          <Text style={styles.resetText}>Play Again</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.resetButton} onPress={resetGame}>
+            <Text style={styles.resetText}>
+              {(winner || isDraw) ? 'Play Again' : 'Quit'}
+            </Text>
+          </TouchableOpacity>
+        </View>
       )}
     </SafeAreaView>
   );
 };
 
-function calculateWinner(squares: (string | null)[]) {
+function calculateWinner(squares: (string | null)[]): { winner: string | null; line: number[] | null } {
   const lines = [
-    [0,1,2],[3,4,5],[6,7,8],
-    [0,3,6],[1,4,7],[2,5,8],
-    [0,4,8],[2,4,6],
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+    [0, 4, 8], [2, 4, 6],            // diagonals
   ];
-  for (let [a,b,c] of lines) {
+  for (let line of lines) {
+    const [a, b, c] = line;
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return { winner: squares[a], line };
     }
   }
-  return null;
+  return { winner: null, line: null };
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  status: {
-    fontSize: 20,
-    marginBottom: 20,
-  },
-  board: {
-    width: 300,
-    height: 300,
-    justifyContent: 'center',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  square: {
-    width: 100,
-    height: 100,
-    borderWidth: 1,
-    borderColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  symbol: {
-    fontSize: 48,
-    fontWeight: 'bold',
-  },
-  resetButton: {
-    marginTop: 30,
-    padding: 12,
-    backgroundColor: '#007bff',
-    borderRadius: 6,
-  },
-  resetText: {
-    color: 'white',
-    fontSize: 16,
-  },
-});
 
 export default App;
