@@ -76,7 +76,7 @@ const App = () => {
           </View>
           <TouchableOpacity style={styles.resetButton} onPress={resetGame}>
             <Text style={styles.resetText}>
-              {(winner || isDraw) ? 'Play Again' : 'Quit'}
+              {(winner || isDraw) ? 'aPlay Again' : 'Quit'}
             </Text>
           </TouchableOpacity>
         </View>
