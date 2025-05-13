@@ -9,6 +9,7 @@ import {
 
 
 const App = () => {
+  const WINNING_LETTERS = ['T', 'U', 'Q'];
   const emptyBoard = Array(9).fill(null);
   const [gameStarted, setGameStarted] = useState(false);
 
@@ -34,6 +35,12 @@ const App = () => {
 
   const renderSquare = (index: number) => {
     const isWinningSquare = winningLine?.includes(index);
+    let displayValue = board[index];
+
+    if (winner && isWinningSquare) {
+      const letterIndex = winningLine.indexOf(index);
+      displayValue = WINNING_LETTERS[letterIndex];
+    }
 
     return (
       <TouchableOpacity
@@ -41,11 +48,11 @@ const App = () => {
         style={[styles.square, isWinningSquare && styles.winningSquare]}
         onPress={() => handlePress(index)}
       >
-        <Text style={styles.symbol}>{board[index]}</Text>
+        <Text style={styles.symbol}>{displayValue}</Text>
       </TouchableOpacity>
     );
   };
-
+  
   return (
     <SafeAreaView style={styles.container}>
       {!gameStarted ? (

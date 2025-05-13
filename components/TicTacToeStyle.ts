@@ -59,7 +59,8 @@ export const styles = StyleSheet.create({
     fontSize: 18,
   },
   winningSquare: {
-    backgroundColor: '#d1ffd6', 
+    backgroundColor: '#d1ffd6',
+    borderColor: '#4CAF50',
   },
   gameCard: {
     backgroundColor: '#ffffff',
