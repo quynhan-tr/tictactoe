@@ -1,5 +1,7 @@
 # Welcome to TicTacToe
 
+<img width="507" alt="image" src="https://github.com/user-attachments/assets/236272aa-c815-464e-a1a5-07e8dc6061af" />
+
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
